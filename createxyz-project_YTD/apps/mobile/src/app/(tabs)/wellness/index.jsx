@@ -23,7 +23,46 @@ import {
 } from "lucide-react-native";
 import { useThemeColors } from "../../../utils/useThemeColors";
 import { useRouter } from "expo-router";
-import { databaseClient } from "../../../utils/database";
+
+// Daily wellness prompts (hardcoded for now)
+const dailyPrompts = [
+  {
+    id: "1",
+    title: "Mirror Check",
+    description: "Adjust mirrors and check blind spots",
+    points: 25,
+    icon: Eye,
+    completed: true,
+    category: "Safety",
+  },
+  {
+    id: "2",
+    title: "Hydration Break",
+    description: "Drink a full glass of water",
+    points: 30,
+    icon: Droplets,
+    completed: true,
+    category: "Health",
+  },
+  {
+    id: "3",
+    title: "Stretch Break",
+    description: "5-minute stretch routine",
+    points: 50,
+    icon: Move,
+    completed: false,
+    category: "Physical",
+  },
+  {
+    id: "4",
+    title: "Deep Breathing",
+    description: "3 minutes of focused breathing",
+    points: 40,
+    icon: Heart,
+    completed: false,
+    category: "Mental",
+  },
+];
 
 export default function WellnessScreen() {
   const insets = useSafeAreaInsets();
@@ -32,8 +71,7 @@ export default function WellnessScreen() {
   const [currentPoints, setCurrentPoints] = useState(1250);
   const [currentStreak, setCurrentStreak] = useState(7);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [activities, setActivities] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [activities] = useState(dailyPrompts);
 
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -41,77 +79,9 @@ export default function WellnessScreen() {
     Inter_600SemiBold,
   });
 
-  // Load wellness activities from database
-  useEffect(() => {
-    const loadWellnessData = async () => {
-      try {
-        const userId = 'demo-user-id'; // In a real app, this would come from authentication
-        
-        // Load activities from database
-        const activitiesData = await databaseClient.getWellnessActivities();
-        setActivities(activitiesData);
-        
-        // Load user stats
-        const stats = await databaseClient.getWellnessStats(userId);
-        setCurrentPoints(stats.totalPoints || 0);
-        setCurrentStreak(stats.streakCount || 0);
-      } catch (error) {
-        console.error('Failed to load wellness data:', error);
-        // Use default activities if database fails
-        setActivities(dailyPrompts);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (fontsLoaded) {
-      loadWellnessData();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded || loading) {
+  if (!fontsLoaded) {
     return null;
   }
-
-  // Daily wellness prompts
-  const dailyPrompts = [
-    {
-      id: "1",
-      title: "Mirror Check",
-      description: "Adjust mirrors and check blind spots",
-      points: 25,
-      icon: Eye,
-      completed: true,
-      category: "Safety",
-    },
-    {
-      id: "2",
-      title: "Hydration Break",
-      description: "Drink a full glass of water",
-      points: 30,
-      icon: Droplets,
-      completed: true,
-      category: "Health",
-    },
-    {
-      id: "3",
-      title: "Stretch Break",
-      description: "5-minute stretch routine",
-      points: 50,
-      icon: Move,
-      completed: false,
-      category: "Physical",
-    },
-    {
-      id: "4",
-      title: "Deep Breathing",
-      description: "3 minutes of focused breathing",
-      points: 40,
-      icon: Heart,
-      completed: false,
-      category: "Mental",
-    },
-  ];
 
   // Earned badges
   const badges = [
@@ -148,15 +118,6 @@ export default function WellnessScreen() {
     const prompt = activities.find((p) => p.id === promptId) || dailyPrompts.find((p) => p.id === promptId);
     if (prompt && !prompt.completed) {
       try {
-        const userId = 'demo-user-id'; // In a real app, this would come from authentication
-        
-        // Save completion to database
-        await databaseClient.completeWellnessActivity({
-          userId,
-          activityId: prompt.id,
-          notes: `Completed ${prompt.title}`
-        });
-        
         setCurrentPoints((prev) => prev + prompt.points);
         Alert.alert(
           "Great job!",

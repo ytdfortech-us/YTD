@@ -25,35 +25,35 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="home"
+        name="home/index"
         options={{
           title: "Home",
           tabBarIcon: ({ color, size }) => <Home color={color} size={24} />,
         }}
       />
       <Tabs.Screen
-        name="communities"
+        name="communities/index"
         options={{
           title: "Communities",
           tabBarIcon: ({ color, size }) => <Users color={color} size={24} />,
         }}
       />
       <Tabs.Screen
-        name="wellness"
+        name="wellness/index"
         options={{
           title: "Wellness",
           tabBarIcon: ({ color, size }) => <Heart color={color} size={24} />,
         }}
       />
       <Tabs.Screen
-        name="parking"
+        name="parking/index"
         options={{
           title: "Parking",
           tabBarIcon: ({ color, size }) => <MapPin color={color} size={24} />,
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="profile/index"
         options={{
           title: "Profile",
           tabBarIcon: ({ color, size }) => <User color={color} size={24} />,

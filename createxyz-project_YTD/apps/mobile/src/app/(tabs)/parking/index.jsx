@@ -6,6 +6,7 @@ import {
   Alert,
   ScrollView,
   TextInput,
+  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -15,7 +16,7 @@ import {
   Inter_500Medium,
   Inter_600SemiBold,
 } from '@expo-google-fonts/inter';
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, PROVIDER_DEFAULT, Marker } from 'react-native-maps';
 import { 
   MapPin,
   List,
@@ -509,7 +510,7 @@ export default function ParkingScreen() {
         <View style={{ flex: 1 }}>
           {userLocation && (
             <MapView
-              provider={PROVIDER_GOOGLE}
+              provider={Platform.OS === 'ios' ? PROVIDER_DEFAULT : PROVIDER_GOOGLE}
               style={{ flex: 1 }}
               region={userLocation}
               showsUserLocation={true}

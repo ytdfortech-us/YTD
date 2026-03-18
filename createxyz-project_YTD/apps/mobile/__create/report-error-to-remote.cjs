@@ -6,10 +6,6 @@ const reportErrorToRemote = async ({ error }) => {
     !process.env.EXPO_PUBLIC_PROJECT_GROUP_ID ||
     !process.env.EXPO_PUBLIC_CREATE_TEMP_API_KEY
   ) {
-    console.debug(
-      'reportErrorToRemote: Missing environment variables for logging endpoint, project group ID, or API key.',
-      error
-    );
     return { success: false };
   }
   try {
@@ -19,6 +15,8 @@ const reportErrorToRemote = async ({ error }) => {
       serializeError = module.serializeError;
     }
     
+    const safeError = error instanceof Error ? error : new Error('Unknown error');
+
     await fetch(process.env.EXPO_PUBLIC_LOGS_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -29,7 +27,7 @@ const reportErrorToRemote = async ({ error }) => {
         projectGroupId: process.env.EXPO_PUBLIC_PROJECT_GROUP_ID,
         logs: [
           {
-            message: JSON.stringify(serializeError(error)),
+            message: JSON.stringify(serializeError(safeError)),
             timestamp: new Date().toISOString(),
             level: 'error',
           },
